@@ -4,11 +4,13 @@ import React, { useState, useEffect } from "react";
 import { MdDone, MdDeleteOutline } from "react-icons/md";
 import { Transition } from '@headlessui/react';
 import { CiUndo } from "react-icons/ci";
+import { MdOutlineModeEdit } from "react-icons/md";
+import { IoIosSave } from "react-icons/io";
 import Link from "next/link";
 
 export default function Home() {
   const [task, setTask] = useState('');
-  const [listTask, setListTask] = useState<{ id: number; task: string; completed: boolean }[]>([]);
+  const [listTask, setListTask] = useState<{ id: number; task: string; completed: boolean; isEdit: boolean }[]>([]);
   const [filter, setFilter] = useState('all');
   const [showNotification, setShowNotification] = useState(false);
   const [showDeleteNotification, setShowDeleteNotification] = useState(false);
@@ -48,12 +50,22 @@ export default function Home() {
         id: Date.now(),
         task,
         completed: false,
+        isEdit: false
       };
       setListTask([...listTask, newTask]);
       setTask('');
       setShowNotification(true);
       setTimeout(() => setShowNotification(false), 1000);
     }
+  };
+
+  const handleEditTask = (e: React.FormEvent, id: number) => {
+    e.preventDefault();
+    setListTask(
+      listTask.map((taskItem) =>
+        taskItem.id === id ? { ...taskItem, task: taskItem.task, isEdit: false } : taskItem
+      )
+    );
   };
 
   const capitalizeFirstLetter = (value: string) => {
@@ -110,7 +122,7 @@ export default function Home() {
           {listTask.length !== 0 && status.map((value, id) => (
             <button
               key={id}
-              className={`px-4 py-2 ${filter===value.name ? 'bg-neutral-200 text-black' : 'bg-neutral-800 text-neutral-200'} rounded-xl`}
+              className={`px-4 py-2 ${filter === value.name ? 'bg-neutral-200 text-black' : 'bg-neutral-800 text-neutral-200'} rounded-xl`}
               onClick={() => setFilter(value.name)}
             >
               {value.label}
@@ -127,30 +139,57 @@ export default function Home() {
               shadow-md shadow-slate-800 border border-solid rounded-full place-content-center px-5 py-3 justify-between flex border-transparent w-full lg:w-[500px] justify-self-center
             `}
           >
-            <p className={`${taskItem.completed ? 'text-black' : ''}`}>
-              {capitalizeFirstLetter(taskItem.task)}
-            </p>
-            <div className="flex gap-3">
-              {taskItem.completed ?
-                <CiUndo
-                  size={25}
-                  color={"black"}
-                  className="cursor-pointer"
-                  onClick={() => toggleTaskCompletion(taskItem.id)}
-                /> :
-                <MdDone
-                  size={25}
-                  color={"#00C55E"}
-                  className="cursor-pointer"
-                  onClick={() => toggleTaskCompletion(taskItem.id)}
+            {(taskItem.isEdit) ?
+              <form onSubmit={(e) => handleEditTask(e, taskItem.id)} className="flex gap-1">
+                <input
+                  type="text"
+                  value={taskItem.task}
+                  className="flex-1 px-2 rounded-xl text-slate-900"
+                  onChange={(e) => setListTask(listTask.map((t) => t.id === taskItem.id ? { ...t, task: e.target.value } : t))}
                 />
-              }
-              <MdDeleteOutline
-                className="cursor-pointer"
-                size={25}
-                color="#EF4444"
-                onClick={() => deleteTask(taskItem.id)}
-              />
+                <IoIosSave
+                  type="submit"
+                  size={25}
+                  color="white"
+                  className="cursor-pointer"
+                  onClick={(e) => handleEditTask(e, taskItem.id)}
+                />
+              </form> :
+              <p className={`${taskItem.completed ? 'text-black' : ''}`}>
+                {capitalizeFirstLetter(taskItem.task)}
+              </p>
+            }
+            <div className="flex gap-3">
+              {!taskItem.isEdit && (
+                <>
+                  {taskItem.completed ?
+                    <CiUndo
+                      size={25}
+                      color="black"
+                      className="cursor-pointer"
+                      onClick={() => toggleTaskCompletion(taskItem.id)}
+                    /> :
+                    <MdDone
+                      size={25}
+                      color={"#00C55E"}
+                      className="cursor-pointer"
+                      onClick={() => toggleTaskCompletion(taskItem.id)}
+                    />
+                  }
+                  {!taskItem.completed && <MdOutlineModeEdit
+                    size={22}
+                    color={taskItem.isEdit ? 'grey' : 'white'}
+                    className="cursor-pointer"
+                    onClick={() => setListTask(listTask.map((t) => t.id === taskItem.id ? { ...t, isEdit: true } : t))}
+                  />}
+                  <MdDeleteOutline
+                    className="cursor-pointer"
+                    size={25}
+                    color="#EF4444"
+                    onClick={() => deleteTask(taskItem.id)}
+                  />
+                </>
+              )}
             </div>
           </div>
         ))}
