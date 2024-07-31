@@ -95,7 +95,7 @@ export default function Home() {
           {listTask.length !== 0 && status.map((value, id) => (
             <button
               key={id}
-              className={`px-4 py-2 ${filter===value.name ? 'bg-neutral-200 text-black' : 'bg-neutral-800'} text-neutral-200 rounded-xl`}
+              className={`px-4 py-2 ${filter===value.name ? 'bg-neutral-200 text-black' : 'bg-neutral-800 text-neutral-200'} rounded-xl`}
               onClick={() => setFilter(value.name)}
             >
               {value.label}
