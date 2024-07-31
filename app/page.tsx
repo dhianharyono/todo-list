@@ -99,7 +99,7 @@ export default function Home() {
         <span className="text-sm font-bold text-slate-400 italic">
           save our todo list |
           <Link href="https://dhian-app.vercel.app/" target="_blank">
-            <span className="hover:text-gray-200 ml-1">dhianharyono</span>
+            <span className="hover:text-gray-400 ml-1 text-gray-300">dhianharyono</span>
           </Link>
         </span>
       </div>
