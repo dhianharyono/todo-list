@@ -28,6 +28,19 @@ export default function Home() {
     }
   ];
 
+  useEffect(() => {
+    // Load tasks from local storage on initial render
+    const storedTasks = localStorage.getItem('listTask');
+    if (storedTasks) {
+      setListTask(JSON.parse(storedTasks));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save tasks to local storage whenever listTask changes
+    localStorage.setItem('listTask', JSON.stringify(listTask));
+  }, [listTask]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (task.trim()) {
