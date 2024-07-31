@@ -70,6 +70,8 @@ export default function Home() {
 
   const deleteTask = (id: number) => {
     setListTask(listTask.filter((task) => task.id !== id));
+    setShowDeleteNotification(true);
+    setTimeout(() => setShowDeleteNotification(false), 1000);
   };
 
   const filteredTasks = listTask.filter(task => {
@@ -153,6 +155,7 @@ export default function Home() {
           </div>
         ))}
 
+        {/* Add Notification */}
         <Transition
           show={showNotification}
           enter="transition-opacity duration-300"
@@ -164,6 +167,21 @@ export default function Home() {
         >
           <div className="fixed top-5 right-5 bg-green-500 text-white p-4 rounded">
             Task added successfully!
+          </div>
+        </Transition>
+
+        {/* Delete Notification */}
+        <Transition
+          show={showDeleteNotification}
+          enter="transition-opacity duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity duration-300"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed top-5 right-5 bg-red-500 text-white p-4 rounded">
+            Task deleted successfully!
           </div>
         </Transition>
       </div>
